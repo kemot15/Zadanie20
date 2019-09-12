@@ -1,8 +1,5 @@
-package pl.javastart.zadania.servlet;
+package pl.javastart.zadania.service;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -10,26 +7,13 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet("/calcmeter")
-public class CalcServlet extends HttpServlet {
+public class CalculatorService {
     private static String KILOMETR = "kilometr";
     private static String CENTYMETR = "centymetr";
     private static String MILIMETR = "milimetr";
     private static String KILOGRAM = "kilogram";
     private static String GRAM = "gram";
     private static String MILIGRAM = "miligram";
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("text/HTML");
-        PrintWriter writer = response.getWriter();
-        Map<String, Double> map = getValues(request);
-        if(checkValues(map)){
-            showValues(calculator(map), writer);
-        }else
-            writer.println("<h1>Podaj wiecej niż jedną wartość!</h1>");
-        writer.close();
-    }
 
     private Map<String, Double> getValues(HttpServletRequest request){
         String kilometr = request.getParameter(KILOMETR);
@@ -46,11 +30,11 @@ public class CalcServlet extends HttpServlet {
     }
 
     private void setValue(String kilogram, String gram, String miligram, Map<String, Double> map, String kilogram2, String gram2, String miligram2) {
-        if ((kilogram != null) && kilogram !="")
+        if ((kilogram != null) && !"".equals(kilogram))
             map.put(kilogram2, Double.valueOf(kilogram));
-        if ((gram != null) && gram !="")
+        if ((gram != null) &&  !"".equals(gram))
             map.put(gram2, Double.valueOf(gram));
-        if ((miligram != null) && miligram !="")
+        if ((miligram != null) && !"".equals(miligram))
             map.put(miligram2, Double.valueOf(miligram));
     }
 
@@ -92,5 +76,18 @@ public class CalcServlet extends HttpServlet {
         for (Map.Entry<String, Double> entry: map.entrySet()){
             writer.println("<p>"+ entry.getKey() + ": " + entry.getValue() + "</p>");
         }
+    }
+
+    public static void mainCalculator (HttpServletResponse response, HttpServletRequest request) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/HTML");
+        PrintWriter writer = response.getWriter();
+        CalculatorService calculatorService = new CalculatorService();
+        Map<String, Double> map = calculatorService.getValues(request);
+        if(calculatorService.checkValues(map)){
+            calculatorService.showValues(calculatorService.calculator(map), writer);
+        }else
+            writer.println("<h1>Podaj wiecej niż jedną wartość!</h1>");
+        writer.close();
     }
 }
